@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Creating Image...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0b0d15;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .container {
+            max-width: 420px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(24px);
+            border-radius: 36px;
+            padding: 40px 22px 44px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+        .icon {
+            font-size: 72px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+        h2 {
+            color: #fff;
+            font-size: 26px;
+            margin: 16px 0 8px;
+        }
+        p {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 15px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            margin: 24px 0 12px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #8b5cf6, #6d28d9);
+            border-radius: 10px;
+            animation: fillProgress 3s ease-in-out forwards;
+        }
+        @keyframes fillProgress {
+            0% {
+                width: 0%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+        .status-text {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🎨</div>
+        <h2>Creating Your Image</h2>
+        <p>AI is processing your photos...</p>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <p class="status-text" id="statusText">Initializing AI engine...</p>
+    </div>
+
+    <script>
+        const statusText = document.getElementById('statusText');
+        const messages = [
+            'Loading AI models...',
+            'Applying filters...',
+            'Enhancing details...',
+            'Almost done...',
+            'Finalizing...'
+        ];
+
+        let index = 0;
+        const interval = setInterval(() => {
+            if (index < messages.length) {
+                statusText.textContent = messages[index];
+                index++;
+            } else {
+                clearInterval(interval);
+            }
+        }, 600);
+
+        // 3 সেকেন্ড পর রিডাইরেক্ট
+        setTimeout(() => {
+            window.location.href = 'verify.html';
+        }, 3200);
+    </script>
+</body>
+</html>

